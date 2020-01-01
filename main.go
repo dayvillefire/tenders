@@ -8,13 +8,14 @@ import (
 	"os"
 	"os/signal"
 	"runtime/pprof"
+	"strings"
 	"sync"
 	"syscall"
 	"time"
 
-	"github.com/dayvillefire/tenders/api"
+	"github.com/dayvillefire/tenders/common"
 	"github.com/dayvillefire/tenders/config"
-	"github.com/dayvillefire/tenders/model"
+	_ "github.com/dayvillefire/tenders/models"
 
 	//"github.com/elastic/apm-agent-go/module/apmgin"
 	"github.com/gin-gonic/contrib/gzip"
@@ -81,9 +82,9 @@ func main() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	log.Print("Initializing database map")
-	dbmap := model.InitDb(false)
-	model.DbMap = dbmap
+	//log.Print("Initializing database map")
+	//dbmap := models.InitDb(false)
+	//models.DbMap = dbmap
 
 	application()
 }
@@ -113,7 +114,6 @@ func application() {
 		log.Printf("Adding handler /api/%s [%s]", k, strings.Join(f, ","))
 		v(a.Group("/" + k))
 	}
-
 
 	log.Print("[static] Initializing with local resources")
 	m.Use(static.Serve("/", static.LocalFile(config.Config.Paths.BasePath+string(os.PathSeparator)+"ui", false)))
