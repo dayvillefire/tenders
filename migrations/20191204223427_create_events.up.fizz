@@ -1,0 +1,14 @@
+create_table("events") {
+	t.Column("id", "uuid", {primary: true})
+	t.Timestamps()
+	t.Column("dateof", "datetime")
+	t.Column("beginhour", "integer")
+	t.Column("endhour", "integer")
+	t.Column("department", "uuid")
+	t.Column("location", "uuid")
+	t.Column("staffingreq", "string")
+	t.Column("staffingopt", "string")
+	t.Column("active", "boolean")
+	t.ForeignKey("department", {"departments": ["id"]}, {"on_delete": "cascade"})
+	t.ForeignKey("location", {"locations": ["id"]}, {"on_delete": "cascade"})
+}

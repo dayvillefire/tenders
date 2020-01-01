@@ -1,0 +1,14 @@
+create_table("users") {
+	t.Column("id", "uuid", {primary: true})
+	t.Timestamps()
+	t.Column("shortcode", "string")
+	t.Column("pin", "string")
+	t.Column("firstname", "string")
+	t.Column("lastname", "string")
+	t.Column("department", "uuid")
+	t.Column("email", "string")
+	t.Column("phone", "string")
+	t.Column("bitfield", "integer")
+	t.Column("active", "boolean")
+	t.ForeignKey("department", {"departments": ["id"]}, {"on_delete": "cascade"})
+}

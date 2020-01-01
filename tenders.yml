@@ -1,0 +1,11 @@
+debug: true
+port: 8000
+paths:
+  base-path: .
+database:
+  user: tenders
+  password: tenders
+  host: tcp(localhost)
+  name: tenders
+apm:
+  enabled: false

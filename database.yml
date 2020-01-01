@@ -1,0 +1,10 @@
+development:
+  dialect: "mysql"
+  database: "tenders"
+  host: {{ envOr "MYSQL_HOST" "127.0.0.1"  }}
+  port: {{ envOr "MYSQL_PORT" "3306"  }}
+  user: {{ envOr "MYSQL_USER"  "tenders"  }}
+  password: {{ envOr "MYSQL_PASSWORD"  "tenders"  }}
+  options:
+    readTimeout: 5s
+

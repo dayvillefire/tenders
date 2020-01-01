@@ -1,0 +1,9 @@
+## No versioning vendoring
+vendor
+
+## Any created binaries
+tenders
+
+## Don't hold on to checksums (for now)
+go.sum
+

@@ -1,0 +1,30 @@
+debug: true
+port: 8000
+accounts:
+  iar:
+    agency: AGENCY
+    username: usernamehere
+    password: mypassword
+    cache-duration: 10
+    accept-patterns:
+      - "RES"
+      - "STA"
+  cad:
+    monitor: aegis
+    username: AEGISLOGIN
+    password: aegispass
+    fdid: 04042
+    base-url: http://cadview.qvec.org/NewWorld.CAD.ViewOnly/
+    cache-duration: 15
+    unit-suffix: "63"
+    ignore-patterns:
+      - "KB*"
+      - "MORT*"
+      - "*OFF"
+      - "RES*"
+      - "STA*"
+      - "QVMEDIC"
+paths:
+  base-path: .
+apm:
+  enabled: false
