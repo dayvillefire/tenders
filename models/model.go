@@ -12,6 +12,7 @@ import (
 var DB *pop.Connection
 
 func init() {
+	log.Printf("Initializing database connection")
 	var err error
 	env := envy.Get("GO_ENV", "development")
 	DB, err = pop.Connect(env)

@@ -20,10 +20,11 @@ type AppConfig struct {
 		BasePath string `yaml:"base-path"`
 	} `yaml:"paths"`
 	Database struct {
-		User string `yaml:"user"`
-		Pass string `yaml:"password"`
-		Host string `yaml:"host"`
-		Name string `yaml:"name"`
+		User          string `yaml:"user"`
+		Pass          string `yaml:"password"`
+		Host          string `yaml:"host"`
+		Name          string `yaml:"name"`
+		Configuration string `yaml:"configuration"`
 	} `yaml:"database"`
 	Apm struct {
 		Host           string   `yaml:"host"`
@@ -33,6 +34,11 @@ type AppConfig struct {
 		IgnorePatterns []string `yaml:"ignore-patterns"`
 		SanitizeFields []string `yaml:"sanitize-fields"`
 	} `yaml:"apm"`
+	Auth struct {
+		ClientID     string `yaml:"id"`
+		ClientSecret string `yaml:"secret"`
+		StoreSecret  string `yaml:"store-secret"`
+	} `yaml:"auth"`
 }
 
 func (c *AppConfig) SetDefaults() {

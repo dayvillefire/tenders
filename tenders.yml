@@ -7,5 +7,10 @@ database:
   password: tenders
   host: tcp(localhost)
   name: tenders
+  configuration: development
 apm:
   enabled: false
+auth:
+  id: 920167854639-9sviqhfgqdmi9hfa8ujlnos0o6ualp5o.apps.googleusercontent.com
+  secret: u8Su-sOxXT_InuCi4X_D7R2y
+  store-secret: ZVBXRPL216

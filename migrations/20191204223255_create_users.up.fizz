@@ -7,8 +7,10 @@ create_table("users") {
 	t.Column("lastname", "string")
 	t.Column("department", "uuid")
 	t.Column("email", "string")
+	t.Column("loginemail", "string")
 	t.Column("phone", "string")
 	t.Column("bitfield", "integer")
+	t.Column("picture", "string")
 	t.Column("active", "boolean")
 	t.ForeignKey("department", {"departments": ["id"]}, {"on_delete": "cascade"})
 }

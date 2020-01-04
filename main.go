@@ -13,12 +13,15 @@ import (
 	"syscall"
 	"time"
 
+	_ "github.com/dayvillefire/tenders/api"
 	"github.com/dayvillefire/tenders/common"
 	"github.com/dayvillefire/tenders/config"
 	_ "github.com/dayvillefire/tenders/models"
+	"github.com/dayvillefire/tenders/oauth"
 
 	//"github.com/elastic/apm-agent-go/module/apmgin"
 	"github.com/gin-gonic/contrib/gzip"
+	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/natefinch/lumberjack"
@@ -82,9 +85,7 @@ func main() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	//log.Print("Initializing database map")
-	//dbmap := models.InitDb(false)
-	//models.DbMap = dbmap
+	common.InitDB()
 
 	application()
 }
@@ -92,14 +93,21 @@ func main() {
 func application() {
 	//hostname, _ := os.Hostname()
 
+	oauth.InitializeOauth()
+
 	log.Printf("Initializing web services")
-	m := gin.New()
+	m := gin.Default()
+	m.Use(sessions.Sessions("tenderssession", oauth.Store))
 	m.Use(gin.Logger())
 	//if *Apm {
 	//	m.Use(apmgin.Middleware(m))
 	//} else {
 	m.Use(gin.Recovery())
 	//}
+
+	// OAuth:
+	m.GET("/login", oauth.OAuthLoginHandler)
+	m.GET("/auth", oauth.OAuthHandler)
 
 	// Enable gzip compression
 	m.Use(gzip.Gzip(gzip.DefaultCompression))
