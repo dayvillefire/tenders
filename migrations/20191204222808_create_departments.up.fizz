@@ -7,3 +7,4 @@ create_table("departments") {
 	t.Column("contactphone", "string")
 	t.Column("active", "boolean")
 }
+sql(`REPLACE INTO departments SET id = '3e516d0f-df98-4f56-b6b3-f5770a993f07', name = 'Default', active = TRUE, created_at = NOW(), updated_at = NOW(), contactname = '', contactemail = '', contactphone = '';`)

@@ -13,15 +13,16 @@ import (
 	"syscall"
 	"time"
 
+	jwt "github.com/appleboy/gin-jwt/v2"
 	_ "github.com/dayvillefire/tenders/api"
+	"github.com/dayvillefire/tenders/auth"
 	"github.com/dayvillefire/tenders/common"
 	"github.com/dayvillefire/tenders/config"
+	"github.com/dayvillefire/tenders/models"
 	_ "github.com/dayvillefire/tenders/models"
-	"github.com/dayvillefire/tenders/oauth"
 
 	//"github.com/elastic/apm-agent-go/module/apmgin"
 	"github.com/gin-gonic/contrib/gzip"
-	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/natefinch/lumberjack"
@@ -93,11 +94,11 @@ func main() {
 func application() {
 	//hostname, _ := os.Hostname()
 
-	oauth.InitializeOauth()
+	//oauth.InitializeOauth()
 
 	log.Printf("Initializing web services")
 	m := gin.Default()
-	m.Use(sessions.Sessions("tenderssession", oauth.Store))
+	//m.Use(sessions.Sessions("tenderssession", oauth.Store))
 	m.Use(gin.Logger())
 	//if *Apm {
 	//	m.Use(apmgin.Middleware(m))
@@ -106,8 +107,8 @@ func application() {
 	//}
 
 	// OAuth:
-	m.GET("/login", oauth.OAuthLoginHandler)
-	m.GET("/auth", oauth.OAuthHandler)
+	//m.GET("/login", oauth.OAuthLoginHandler)
+	//m.GET("/auth", oauth.OAuthHandler)
 
 	// Enable gzip compression
 	m.Use(gzip.Gzip(gzip.DefaultCompression))
@@ -122,6 +123,23 @@ func application() {
 		log.Printf("Adding handler /api/%s [%s]", k, strings.Join(f, ","))
 		v(a.Group("/" + k))
 	}
+
+	// Redirection for short code URLs, based on whether we have an active session or not
+	m.GET("/r/:shortcode", func(c *gin.Context) {
+		claims := jwt.ExtractClaims(c)
+		if claims == nil || claims[auth.IdentityKey] == nil {
+			c.Redirect(http.StatusTemporaryRedirect, "/login.html?code="+c.Param("shortcode"))
+			return
+		}
+		_, err := models.UserByShortCode(claims[auth.IdentityKey].(string))
+		if err != nil {
+			c.Redirect(http.StatusTemporaryRedirect, "/login.html?code="+c.Param("shortcode"))
+			return
+		}
+		c.Redirect(http.StatusTemporaryRedirect, "/")
+	})
+
+	m.POST("/login", auth.GetAuthMiddleware().LoginHandler)
 
 	log.Print("[static] Initializing with local resources")
 	m.Use(static.Serve("/", static.LocalFile(config.Config.Paths.BasePath+string(os.PathSeparator)+"ui", false)))

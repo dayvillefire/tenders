@@ -3,6 +3,7 @@ package api // import "github.com/dayvillefire/tenders/api"
 import (
 	"net/http"
 
+	"github.com/dayvillefire/tenders/auth"
 	"github.com/dayvillefire/tenders/common"
 	"github.com/dayvillefire/tenders/models"
 	"github.com/gin-gonic/gin"
@@ -10,11 +11,13 @@ import (
 
 func init() {
 	common.ApiMap["commitment"] = func(r *gin.RouterGroup) {
+		r.Use(auth.GetAuthMiddleware().MiddlewareFunc())
 		r.PUT("", apiCommitmentSave)
 		r.GET("/:id", apiCommitmentGet)
 		r.DELETE("/:id", apiCommitmentDelete)
 	}
 	common.ApiMap["commitments"] = func(r *gin.RouterGroup) {
+		r.Use(auth.GetAuthMiddleware().MiddlewareFunc())
 		r.GET("", apiCommitmentList)
 		r.GET("/:query", apiCommitmentList)
 	}

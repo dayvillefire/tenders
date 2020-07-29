@@ -14,6 +14,7 @@ import (
 	"github.com/dayvillefire/tenders/models"
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/gobuffalo/uuid"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 )
@@ -33,7 +34,7 @@ type User struct {
 	Profile       string `json:"profile"`
 	Picture       string `json:"picture"`
 	Email         string `json:"email"`
-	EmailVerified string `json:"email_verified"`
+	EmailVerified bool   `json:"email_verified"`
 	Gender        string `json:"gender"`
 }
 
@@ -102,14 +103,16 @@ func OAuthHandler(c *gin.Context) {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
+	log.Println("Deserialized object: %#v", user)
 
 	// Make sure local record exist here!
 	if !models.UserExistsByEmail(user.Email) {
 		obj := models.User{
-			LoginEmail: user.Email,
-			FirstName:  user.GivenName,
-			LastName:   user.FamilyName,
-			BitField:   models.UserBitActive,
+			LoginEmail:   user.Email,
+			FirstName:    user.GivenName,
+			LastName:     user.FamilyName,
+			BitField:     models.UserBitActive,
+			DepartmentID: uuid.FromStringOrNil("3e516d0f-df98-4f56-b6b3-f5770a993f07"),
 		}
 		_, err = common.DB.ValidateAndCreate(&obj)
 		if err != nil {
