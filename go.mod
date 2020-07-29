@@ -1,6 +1,6 @@
 module github.com/dayvillefire/tenders
 
-go 1.12
+go 1.13
 
 require (
 	github.com/appleboy/gin-jwt/v2 v2.6.2
