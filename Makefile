@@ -4,8 +4,6 @@ clean:
 	go clean -v
 
 binary:
-	go build -v -mod=vendor
+	go build -v
 
-vendor:
-	go mod vendor
 
