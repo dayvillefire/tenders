@@ -39,6 +39,6 @@ func toDate(in string) (time.Time, error) {
 func mustUserLookup(username string) (models.User, error) {
 	user := models.User{}
 	query := common.DB.Where("name = ?", username).Limit(1)
-	err := query.All(&user)
+	err := query.First(&user)
 	return user, err
 }
