@@ -70,6 +70,8 @@ func GetAuthMiddleware() *jwt.GinJWTMiddleware {
 				return user, nil
 			}
 
+			log.Printf("auth.Authenticator: ERR: %s", err.Error())
+
 			return nil, jwt.ErrFailedAuthentication
 		},
 		Authorizator: func(data interface{}, c *gin.Context) bool {

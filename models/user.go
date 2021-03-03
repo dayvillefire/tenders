@@ -3,6 +3,7 @@ package models
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/dayvillefire/tenders/common"
@@ -41,7 +42,7 @@ type User struct {
 func UserExistsByEmail(email string) bool {
 	var user User
 	query := common.DB.Where("loginemail = ?", email).Limit(1)
-	err := query.All(&user)
+	err := query.First(&user)
 	if err != nil || user.ID.String() == "" {
 		return false
 	}
@@ -52,7 +53,7 @@ func UserExistsByEmail(email string) bool {
 func UserByShortCode(shortcode string) (User, error) {
 	var user User
 	query := common.DB.Where("shortcode = ?", shortcode).Limit(1)
-	err := query.All(&user)
+	err := query.First(&user)
 	return user, err
 }
 
@@ -60,7 +61,10 @@ func UserByShortCode(shortcode string) (User, error) {
 func UserAuth(shortcode string, pin string) (User, error) {
 	var user User
 	query := common.DB.Where("shortcode = ? AND pin = ?", shortcode, pin).Limit(1)
-	err := query.All(&user)
+	err := query.First(&user)
+	if err != nil {
+		log.Printf("UserAuth: ERR: %s", err.Error())
+	}
 	if err == nil && user.PIN == "" {
 		err = fmt.Errorf("user or PIN incorrect")
 	}

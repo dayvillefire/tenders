@@ -4,7 +4,6 @@
 //var config = {};
 var NOTIFICATION_TIMEOUT = 3;
 
-/*
 $(document).ready(function () {
     // Load local UI config before we go any further
     $.getJSON("/api/config", {}, function (response) {
@@ -14,7 +13,6 @@ $(document).ready(function () {
 
     //setInterval(showClock, 1000);
 });
-*/
 
 function urlParam(name) {
     var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
