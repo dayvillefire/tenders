@@ -4,6 +4,8 @@
 //var config = {};
 var NOTIFICATION_TIMEOUT = 3;
 
+var bearerToken = '';
+
 $(document).ready(function () {
     // Load local UI config before we go any further
     $.getJSON("/api/config", {}, function (response) {
@@ -23,4 +25,15 @@ function showClock() {
     var d = new Date();
     d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
     $('#clock').html(d.toISOString().slice(0, 19).replace('T', ' '));
+}
+
+function saveAuth(token) {
+    bearerToken = token;
+    $.cookie('auth', bearerToken);
+}
+
+function getAuth() {
+    token = $.cookie('auth');
+    bearerToken = token;
+    return token;
 }

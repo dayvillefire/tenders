@@ -3,6 +3,7 @@ package main // import "github.com/dayvillefire/tenders"
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -42,7 +43,20 @@ var (
 	hostname            string
 	Version             string
 	VERSION             string
+
+	htmlCache     map[string]htmlCacheEntry
+	htmlCacheLock *sync.Mutex
 )
+
+type htmlCacheEntry struct {
+	data   []byte
+	expire time.Time
+}
+
+func init() {
+	htmlCache = make(map[string]htmlCacheEntry)
+	htmlCacheLock = new(sync.Mutex)
+}
 
 func main() {
 	flag.Parse()
@@ -125,18 +139,60 @@ func application() {
 	}
 
 	// Redirection for short code URLs, based on whether we have an active session or not
-	m.GET("/r/:shortcode", func(c *gin.Context) {
+
+	// Dashboard
+	m.GET("/d/:shortcode", func(c *gin.Context) {
 		claims := jwt.ExtractClaims(c)
 		if claims == nil || claims[auth.IdentityKey] == nil {
-			c.Redirect(http.StatusTemporaryRedirect, "/login.html?code="+c.Param("shortcode"))
+			c.Redirect(http.StatusTemporaryRedirect, "/dashboard.html?code="+c.Param("shortcode"))
 			return
 		}
 		_, err := models.UserByShortCode(claims[auth.IdentityKey].(string))
 		if err != nil {
-			c.Redirect(http.StatusTemporaryRedirect, "/login.html?code="+c.Param("shortcode"))
+			c.Redirect(http.StatusTemporaryRedirect, "/dashboard.html?code="+c.Param("shortcode"))
 			return
 		}
-		c.Redirect(http.StatusTemporaryRedirect, "/")
+		c.Redirect(http.StatusTemporaryRedirect, "/login.html?code="+c.Param("shortcode"))
+	})
+
+	// Redirect for login
+	m.GET("/r/:shortcode", func(c *gin.Context) {
+		// Propagate
+		//c.SetCookie("shortcode", c.Param("shortcode"), 1, "/", "", false, false)
+
+		claims := jwt.ExtractClaims(c)
+		if claims == nil || claims[auth.IdentityKey] == nil {
+			page, err := getPage("login.html")
+			if err != nil {
+				c.HTML(http.StatusInternalServerError, "", err.Error())
+			}
+			page = []byte(strings.Replace(
+				string(page),
+				`id="shortcode" value=""`,
+				fmt.Sprintf(`id="shortcode" value="%s"`, c.Param("shortcode")),
+				0,
+			),
+			)
+			c.Data(http.StatusOK, "text/html", page)
+			return
+		}
+		_, err := models.UserByShortCode(claims[auth.IdentityKey].(string))
+		if err != nil {
+			page, err := getPage("login.html")
+			if err != nil {
+				c.HTML(http.StatusInternalServerError, "", err.Error())
+			}
+			page = []byte(strings.Replace(
+				string(page),
+				`id="shortcode" value=""`,
+				fmt.Sprintf(`id="shortcode" value="%s"`, c.Param("shortcode")),
+				0,
+			),
+			)
+			c.Data(http.StatusOK, "text/html", page)
+			return
+		}
+		c.Redirect(http.StatusTemporaryRedirect, "/d/"+c.Param("shortcode"))
 	})
 
 	m.POST("/login", auth.GetAuthMiddleware().LoginHandler)
@@ -188,4 +244,30 @@ func logger() gin.HandlerFunc {
 		status := c.Writer.Status()
 		log.Println(status)
 	}
+}
+
+func getPage(path string) ([]byte, error) {
+	htmlCacheLock.Lock()
+	defer htmlCacheLock.Unlock()
+
+	entry, found := htmlCache[path]
+	if !found {
+		b, err := ioutil.ReadFile(config.Config.Paths.BasePath + string(os.PathSeparator) + "ui" + string(os.PathSeparator) + path)
+		if err != nil {
+			return b, err
+		}
+		htmlCache[path] = htmlCacheEntry{data: b, expire: time.Now().Add(10 * time.Minute)}
+		return b, err
+	}
+
+	if entry.expire.After(time.Now()) {
+		b, err := ioutil.ReadFile(config.Config.Paths.BasePath + string(os.PathSeparator) + "ui" + string(os.PathSeparator) + path)
+		if err != nil {
+			return b, err
+		}
+		htmlCache[path] = htmlCacheEntry{data: b, expire: time.Now().Add(10 * time.Minute)}
+		return b, err
+	}
+
+	return entry.data, nil
 }
