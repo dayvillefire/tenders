@@ -170,9 +170,10 @@ func application() {
 				string(page),
 				`id="shortcode" value=""`,
 				fmt.Sprintf(`id="shortcode" value="%s"`, c.Param("shortcode")),
-				0,
+				-1,
 			),
 			)
+			//log.Printf("shortcode = %s, page = %s", c.Param("shortcode"), string(page))
 			c.Data(http.StatusOK, "text/html", page)
 			return
 		}
@@ -186,7 +187,7 @@ func application() {
 				string(page),
 				`id="shortcode" value=""`,
 				fmt.Sprintf(`id="shortcode" value="%s"`, c.Param("shortcode")),
-				0,
+				-1,
 			),
 			)
 			c.Data(http.StatusOK, "text/html", page)

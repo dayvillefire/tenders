@@ -17,8 +17,8 @@ var (
 )
 
 type login struct {
-	ShortCode string `form:"shortcode" json:"shortcode" binding:"required"`
-	PIN       string `form:"pin" json:"pin" binding:"required"`
+	ShortCode string `form:"shortcode" json:"shortcode"`
+	PIN       string `form:"pin" json:"pin"`
 }
 
 func helloHandler(c *gin.Context) {
@@ -56,6 +56,7 @@ func GetAuthMiddleware() *jwt.GinJWTMiddleware {
 		Authenticator: func(c *gin.Context) (interface{}, error) {
 			var loginVals login
 			if err := c.ShouldBind(&loginVals); err != nil {
+				log.Printf("auth.Authenticator: ERR: %s", err.Error())
 				return "", jwt.ErrMissingLoginValues
 			}
 
