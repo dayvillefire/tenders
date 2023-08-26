@@ -109,22 +109,11 @@
             return results[1] || 0;
         }
 
-        //$('#shortcode').val(urlParam('code'));
-
         $('#login-button').on('click', function () {
             var data = {
                 "shortcode": $('#shortcode').val(),
                 "pin": $("#pin").val()
             };
-            /*
-            $.post('/login', data, function (xhr, status, error) {
-                console.log({
-                    "xhr": xhr,
-                    "status": status,
-                    "error": error
-                });
-            }, "json");
-            */
             $.ajax({
                 url: '/login',
 		        method: 'post',

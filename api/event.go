@@ -42,7 +42,7 @@ func apiEventDelete(c *gin.Context) {
 		return
 	}
 	var obj models.Event
-	err := common.DB.Find(&obj, id)
+	err := common.DB.Eager().Find(&obj, id)
 	if err != nil {
 		c.AbortWithError(http.StatusGone, err)
 		return
@@ -62,7 +62,7 @@ func apiEventGet(c *gin.Context) {
 		return
 	}
 	var obj models.Event
-	err := common.DB.Find(&obj, id)
+	err := common.DB.Eager().Find(&obj, id)
 	if err != nil {
 		c.AbortWithError(http.StatusNotFound, err)
 		return
@@ -81,13 +81,13 @@ func apiEventList(c *gin.Context) {
 	var obj models.Events
 	var err error
 	if fromDtRaw == "" || toDtRaw == "" {
-		err = common.DB.All(&obj)
+		err = common.DB.Eager().All(&obj)
 	} else {
 		query := common.DB.Where("dateof BETWEEN ? AND ?", fromDt, toDt)
 		if pageNumber != "" && perPage != "" {
 			query = query.Paginate(MustQueryInt(c, "page"), MustQueryInt(c, "perpage"))
 		}
-		err = query.All(&obj)
+		err = query.Eager().All(&obj)
 	}
 	if err != nil {
 		c.AbortWithError(http.StatusNotFound, err)
@@ -111,7 +111,7 @@ func apiEventCommitments(c *gin.Context) {
 
 	var obj models.Commitments
 	query := common.DB.Where("events.id = ?", id).LeftJoin("events", "events.id = commitments.event")
-	err = query.All(&obj)
+	err = query.Eager().All(&obj)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return

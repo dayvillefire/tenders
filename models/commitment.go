@@ -14,8 +14,10 @@ type Commitment struct {
 	ID        uuid.UUID `json:"id" db:"id"`
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
-	Event     Event     `json:"event" db:"event" belongs_to:"event"`
-	User      User      `json:"user" db:"user" belongs_to:"user"`
+	EventID   uuid.UUID `db:"event_id"`
+	Event     *Event    `json:"event" belongs_to:"event"`
+	UserID    uuid.UUID `db:"user_id"`
+	User      *User     `json:"user" belongs_to:"user"`
 	Attending bool      `json:"attending" db:"attending"`
 	Note      string    `json:"note" db:"note"`
 }

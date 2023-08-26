@@ -33,7 +33,7 @@ func apiCommitmentSave(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	obj.User = userObj
+	obj.User = &userObj
 
 	_, err = common.DB.ValidateAndSave(&obj)
 	if err != nil {
@@ -70,7 +70,7 @@ func apiCommitmentGet(c *gin.Context) {
 		return
 	}
 	var obj models.Commitment
-	err := common.DB.Find(&obj, id)
+	err := common.DB.Eager().Find(&obj, id)
 	if err != nil {
 		c.AbortWithError(http.StatusNotFound, err)
 		return
@@ -85,13 +85,13 @@ func apiCommitmentList(c *gin.Context) {
 	var obj models.Commitments
 	var err error
 	if query == "" {
-		err = common.DB.All(&obj)
+		err = common.DB.Eager().All(&obj)
 	} else {
 		query := common.DB.Where("name LIKE CONCAT('%', ?, '%')", query) // TODO: FIXME: XXX
 		if pageNumber != "" && perPage != "" {
 			query = query.Paginate(MustQueryInt(c, "page"), MustQueryInt(c, "perpage"))
 		}
-		err = query.All(&obj)
+		err = query.Eager().All(&obj)
 	}
 	if err != nil {
 		c.AbortWithError(http.StatusNotFound, err)

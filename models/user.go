@@ -13,29 +13,31 @@ import (
 )
 
 const (
-	UserBitActive        = 1
-	UserBitSceneSupport  = 2
-	UserBitFirefighter   = 4
-	UserBitInstructor    = 8
-	UserBitAdministrator = 16
-	UserBitSiteAdmin     = 1024
+	UserBitActive         = 1
+	UserBitSceneSupport   = 2
+	UserBitFirefighter    = 4
+	UserBitInstructor     = 8
+	UserBitLeadInstructor = 16
+	UserBitAdministrator  = 32
+	UserBitSiteAdmin      = 1024
 )
 
 type User struct {
-	ID           uuid.UUID `json:"id" db:"id"`
-	CreatedAt    time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at" db:"updated_at"`
-	ShortCode    string    `json:"short_code" db:"shortcode"`
-	PIN          string    `json:"pin" db:"pin"`
-	FirstName    string    `json:"first_name" db:"firstname"`
-	LastName     string    `json:"last_name" db:"lastname"`
-	DepartmentID uuid.UUID `json:"department" db:"department"`
-	EmailAddress string    `json:"email" db:"email"`
-	LoginEmail   string    `json:"loginemail" db:"loginemail"`
-	PhoneNumber  string    `json:"phone" db:"phone"`
-	BitField     int64     `json:"bitfield" db:"bitfield"`
-	PictureURL   string    `json:"string" db:"picture"`
-	Active       bool      `json:"active" db:"active"`
+	ID           uuid.UUID   `json:"id" db:"id"`
+	CreatedAt    time.Time   `json:"created_at" db:"created_at"`
+	UpdatedAt    time.Time   `json:"updated_at" db:"updated_at"`
+	ShortCode    string      `json:"short_code" db:"shortcode"`
+	PIN          string      `json:"pin" db:"pin"`
+	FirstName    string      `json:"first_name" db:"firstname"`
+	LastName     string      `json:"last_name" db:"lastname"`
+	DepartmentID uuid.UUID   `db:"department"`
+	Department   *Department `json:"department" belongs_to:"department"`
+	EmailAddress string      `json:"email" db:"email"`
+	LoginEmail   string      `json:"loginemail" db:"loginemail"`
+	PhoneNumber  string      `json:"phone" db:"phone"`
+	BitField     int64       `json:"bitfield" db:"bitfield"`
+	PictureURL   string      `json:"string" db:"picture"`
+	Active       bool        `json:"active" db:"active"`
 }
 
 // UserExistsByEmail checks for an existant user

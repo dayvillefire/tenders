@@ -4,3 +4,4 @@ create_table("locations") {
 	t.Column("name", "string")
 	t.Column("active", "boolean")
 }
+sql(`REPLACE INTO locations VALUES ('59985628-4395-11ee-a5f4-60f262f674b7','2023-08-25 18:18:42','2023-08-25 18:18:42','Dennis R. Lemery Training Center',1);`)
