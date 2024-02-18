@@ -144,7 +144,20 @@ func application() {
 	m.GET("/d/:shortcode", func(c *gin.Context) {
 		claims := jwt.ExtractClaims(c)
 		if claims == nil || claims[auth.IdentityKey] == nil {
-			c.Redirect(http.StatusTemporaryRedirect, "/dashboard.html?code="+c.Param("shortcode"))
+			page, err := getPage("dashboard.html")
+			if err != nil {
+				c.HTML(http.StatusInternalServerError, "", err.Error())
+			}
+			page = []byte(strings.Replace(
+				string(page),
+				`id="shortcode" value=""`,
+				fmt.Sprintf(`id="shortcode" value="%s"`, c.Param("shortcode")),
+				-1,
+			),
+			)
+			//log.Printf("shortcode = %s, page = %s", c.Param("shortcode"), string(page))
+			c.Data(http.StatusOK, "text/html", page)
+			//c.Redirect(http.StatusTemporaryRedirect, "/dashboard.html?code="+c.Param("shortcode"))
 			return
 		}
 		_, err := models.UserByShortCode(claims[auth.IdentityKey].(string))
@@ -199,8 +212,10 @@ func application() {
 	m.POST("/login", auth.GetAuthMiddleware().LoginHandler)
 
 	log.Print("[static] Initializing with local resources")
-	m.Use(static.Serve("/", static.LocalFile(config.Config.Paths.BasePath+string(os.PathSeparator)+"ui", false)))
-	m.StaticFile("/", config.Config.Paths.BasePath+string(os.PathSeparator)+"ui"+string(os.PathSeparator)+"index.html")
+	//m.Use(static.Serve("/", static.LocalFile(config.Config.Paths.BasePath+string(os.PathSeparator)+"ui", false)))
+	m.Use(static.Serve("/", static.LocalFile("ui", false)))
+	//m.StaticFile("/dashboard.html", config.Config.Paths.BasePath+string(os.PathSeparator)+"ui"+string(os.PathSeparator)+"dashboard.html")
+	//m.StaticFile("/", config.Config.Paths.BasePath+string(os.PathSeparator)+"ui"+string(os.PathSeparator)+"index.html")
 
 	go func() {
 		log.Printf("Initializing display on :%d", config.Config.Port)

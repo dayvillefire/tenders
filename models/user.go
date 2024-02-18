@@ -30,8 +30,8 @@ type User struct {
 	PIN          string      `json:"pin" db:"pin"`
 	FirstName    string      `json:"first_name" db:"firstname"`
 	LastName     string      `json:"last_name" db:"lastname"`
-	DepartmentID uuid.UUID   `db:"department"`
-	Department   *Department `json:"department" belongs_to:"department"`
+	//DepartmentID uuid.UUID   `db:"department"`
+	//Department   *Department `json:"department" belongs_to:"department"`
 	EmailAddress string      `json:"email" db:"email"`
 	LoginEmail   string      `json:"loginemail" db:"loginemail"`
 	PhoneNumber  string      `json:"phone" db:"phone"`
